@@ -4,14 +4,17 @@
 
 #define WORK_PER_THREAD 16
 
-__global__ void saxpy_parallel(int n, float *x, float *y)
+__global__ void saxpy_parallel(int n, float a, float *x, float *y)
 {
 	int i = blockIdx.x*blockDim.x + threadIdx.x;
 	i *= WORK_PER_THREAD;
 	
-	#pragma unroll
-	for(int j=0; j<WORK_PER_THREAD; j++)
-		y[i+j] = x[i+j] + y[i+j];
+	if (i < n)
+	{
+		#pragma unroll
+		for(int j=0; j<WORK_PER_THREAD; j++)
+			y[i+j] = a * x[i+j] + y[i+j];
+	}
 }
 
 
@@ -55,7 +58,7 @@ int main()
 	int nblocks = ((N / WORK_PER_THREAD)+255)/256;
 
 	// call 
-	saxpy_parallel<<<nblocks,256>>>(N , d_x, d_y);
+	saxpy_parallel<<<nblocks,256>>>(N , a, d_x, d_y);
 	
 	// Copy results back from device memory to host memory
 	// implicty waits for threads to excute
