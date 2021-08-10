@@ -2,7 +2,7 @@
 #include "assert.h"
 
 
-#define WORK_PER_THREAD 16
+#define WORK_PER_THREAD 4
 
 __global__ void saxpy_parallel(int n, float a, float *x, float *y)
 {
@@ -58,7 +58,7 @@ int main()
 	int nblocks = ((N / WORK_PER_THREAD)+255)/256;
 
 	// call 
-	saxpy_parallel<<<nblocks,256>>>(N , a, d_x, d_y);
+	saxpy_parallel<<<nblocks,256>>>(N , 2.0, d_x, d_y);
 	
 	// Copy results back from device memory to host memory
 	// implicty waits for threads to excute
