@@ -58,13 +58,14 @@ int main()
 	int nblocks = ((N / WORK_PER_THREAD)+255)/256;
 
 	// call 
-	saxpy_parallel<<<nblocks,256>>>(N , 2.0, d_x, d_y);
+	saxpy_parallel<<<nblocks,256>>>(N , 1.0, d_x, d_y);
 	
 	// Copy results back from device memory to host memory
 	// implicty waits for threads to excute
 	cudaMemcpy(h_y, d_y, size, cudaMemcpyDeviceToHost);
 
-	for(int i = 0; i<N; i++) assert(h_y[i] == 2*i);
+	for(int i = 0; i<N; i++)
+		assert(h_y[i] == 2*i);
 
 	// Check for any CUDA errors
   	checkCUDAError("cudaMemcpy calls");
